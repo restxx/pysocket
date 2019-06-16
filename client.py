@@ -3,7 +3,7 @@
 
 from net.tcpclient import TcpClient
 from stream.buffio import NewBuffIO
-
+from handle import *
 
 class Client(TcpClient):
 
@@ -15,12 +15,18 @@ class Client(TcpClient):
     def OnRecv(self, data):
         print("Recv:", data)
         bufio = NewBuffIO(data)
-        a = bufio.GetUInt16()
-        self.SendData(b"11111111111111")
+        size = bufio.GetUInt16()
+        isZip = bufio.GetUInt16()
+        cmd = bufio.GetUInt16()
+
+        login_handle.LoginHandle().Execute(cmd, self, bufio)
         pass
 
 
 if __name__ == '__main__':
+
+
+
     client = Client()
     client.Connect("127.0.0.1", 22222)
     client.Run()

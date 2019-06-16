@@ -8,20 +8,20 @@ class CallMap(metaclass=ABCMeta):
 
     def __init__(self):
         self.funcDict = {}
-        self.register()
+        self.Register()
 
-    def Bind(self, Handle, Func):
-        if not Handle in self.funcDict:
-            self.funcDict.update({Handle: Func})
+    def bind(self, cmd, Func):
+        if not cmd in self.funcDict:
+            self.funcDict.update({cmd: Func})
 
     @abstractmethod
-    def register(self):
+    def Register(self):
         pass
 
-    # 执行sql语句 把结果集 dict 交给具体的处理函数
-    # def Execute(self, Handle, *Args):
-    #     if Handle in self.funcDict:
-    #         self.funcDict.get(Handle)(*Args)
+    # 执行  交给具体的处理函数
+    def Execute(self, cmd, *Args):
+        if cmd in self.funcDict:
+            self.funcDict.get(cmd)(*Args)
     #     else:
     #         LogManager.WRITE_LOG(LogLevel.ERROR, u"Handle %s :找不到对应的处理方法" % Handle, None)
 
