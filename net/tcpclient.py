@@ -14,7 +14,7 @@ class TcpClient(metaclass=ABCMeta):
         self.IoLoop = None
         self.__conn = None
         self.__MQ = None
-        self.__isClosed = False
+        self._isClosed = False
 
     def Connect(self, addr, port):
         self.__conn = TcpConnect()
@@ -54,20 +54,25 @@ class TcpClient(metaclass=ABCMeta):
             bufIO.Reset()
         return paks
 
+    @abstractmethod
+    def heartbeat(self, conn):
+        # while not self._isClosed:
+        pass
+
     async def startProc(self):
         def _r():
             bStream = BufferIO()
-            while True:
+            while not self._isClosed:
                 data = self.__conn.recv_data()
                 if not isinstance(data, bytes):
-                    self.__isClosed = True
+                    self._isClosed = True
                     return
                 bStream.Write(data)
                 # 解析包并做返回操作
                 _ = [self.OnRecv(pak) for pak in self.UnPackData(bStream)]
 
         def _s():
-            while not self.__isClosed:
+            while not self._isClosed:
                 data = self.__MQ.get()
                 if isinstance(data, bytes):
                     self.__conn.sendall(data)
@@ -75,7 +80,8 @@ class TcpClient(metaclass=ABCMeta):
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             futures = [
                 self.IoLoop.run_in_executor(executor, _r),
-                self.IoLoop.run_in_executor(executor, _s)
+                self.IoLoop.run_in_executor(executor, _s),
+                self.IoLoop.run_in_executor(executor, self.heartbeat, self.__conn)
             ]
             return [ret for ret in await asyncio.gather(*futures)]
 
@@ -96,7 +102,7 @@ class TcpClient(metaclass=ABCMeta):
 
     def Close(self):
         self.__conn.close()
-        self.__isClosed = True
+        self._isClosed = True
         if self.IoLoop:
             self.IoLoop.close()
 

@@ -23,12 +23,17 @@ class Client(TcpClient):
         login_handle.LoginHandle().Execute(cmd, self, bufio)
         pass
 
+    def heartbeat(self, conn):
+        pass
 
 class GateClient(Client):
 
     def OnConnected(self, conn):
         # 发送另外两个rc5 pak
+        pass
 
+    def heartbeat(self, conn):
+        # self._isClosed
         pass
 
 
