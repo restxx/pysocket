@@ -7,7 +7,7 @@ from stream.crypto import EncDec
 
 class BufferIO(object):
 
-    def __init__(self, enc):
+    def __init__(self, enc=False):
         self.pr = 0  # 读指针
         self.pw = 0  # 写指针
         self.pd = 0  # 解密指针

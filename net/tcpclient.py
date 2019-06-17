@@ -14,16 +14,18 @@ class TcpClient(metaclass=ABCMeta):
         self.IoLoop = None
         self.__conn = None
         self.__MQ = None
+        self.__isClosed = False
 
     def Connect(self, addr, port):
-        self.IoLoop = asyncio.get_event_loop()
-
         self.__conn = TcpConnect()
         if -1 == self.__conn.connect(addr, port):
             self.Close()
+            return -1
 
+        self.IoLoop = asyncio.get_event_loop()
         self.__MQ = MessageQueue()
         self.OnConnected(self.__conn)
+        self.Run()
 
     @abstractmethod
     def OnConnected(self, conn):
@@ -52,21 +54,23 @@ class TcpClient(metaclass=ABCMeta):
             bufIO.Reset()
         return paks
 
-
     async def startProc(self):
         def _r():
-            bIO = BufferIO(False)
+            bStream = BufferIO()
             while True:
-                data = self.__conn.recvData()
-                bIO.Write(data)
+                data = self.__conn.recv_data()
+                if not isinstance(data, bytes):
+                    self.__isClosed = True
+                    return
+                bStream.Write(data)
                 # 解析包并做返回操作
-                _ = [self.OnRecv(pak) for pak in self.UnPackData(bIO)]
-
+                _ = [self.OnRecv(pak) for pak in self.UnPackData(bStream)]
 
         def _s():
-            while True:
+            while not self.__isClosed:
                 data = self.__MQ.get()
-                self.__conn.sendall(data)
+                if isinstance(data, bytes):
+                    self.__conn.sendall(data)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             futures = [
@@ -80,14 +84,23 @@ class TcpClient(metaclass=ABCMeta):
         print("Send", data)
 
     def Run(self):
-        self.IoLoop.run_until_complete(self.startProc())
+        future = None
+        try:
+            future = asyncio.ensure_future(self.startProc())
+            self.IoLoop.run_until_complete(future)
+        except Exception as err:
+            pass
+        finally:
+            if future and future.done():
+                self.Close()
 
     def Close(self):
-        self.IoLoop.close()
+        self.__conn.close()
+        self.__isClosed = True
+        if self.IoLoop:
+            self.IoLoop.close()
 
 
 if __name__ == '__main__':
     pass
-#     client = Client()
-#     client.Connect("127.0.0.1", 22222)
-#     client.Run()
+

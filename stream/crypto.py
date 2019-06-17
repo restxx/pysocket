@@ -4,6 +4,7 @@
 import pydll
 from util.singleton import Singleton
 
+
 class EncDec(Singleton):
 
     def __init__(self):

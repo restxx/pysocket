@@ -17,9 +17,8 @@ class MessageQueue(object):
     def put(self, item):
         self._Q.put(item, block=True, timeout=TIME_OUT)
 
-    @excepts(__name__)
     def get(self):
-        return self._Q.get()
+        return self._Q.get(block=False)
 
 
 if __name__ == '__main__':

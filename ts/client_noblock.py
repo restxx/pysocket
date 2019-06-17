@@ -1,4 +1,4 @@
-#coding=utf8
+# coding=utf8
 # __author__ = 'doc007'
 
 import datetime, errno, optparse, select, socket
@@ -19,7 +19,7 @@ def format_address(address):
 
 
 if __name__ == '__main__':
-    ports = [22222,]
+    ports = [22222, ]
     start = datetime.datetime.now()
 
     sockets = list(map(connect, ports))
@@ -27,7 +27,6 @@ if __name__ == '__main__':
 
     # socket -> task numbers
     sock2task = dict([(s, i + 1) for i, s in enumerate(sockets)])
-
 
     while sockets:
         # 运用select来确保那些可读取的异步socket可以立即开始读取IO
@@ -59,7 +58,7 @@ if __name__ == '__main__':
                 msg = 'Task %d: got %d bytes of poetry from %s'
                 print(msg % (task_num, len(data), addr_fmt))
 
-            #poems[sock] += data
+            # poems[sock] += data
 
     elapsed = datetime.datetime.now() - start
     print('Got poems in %s' % elapsed)

@@ -16,13 +16,15 @@ class TcpConnect(object):
         return self.__sock.connect((address, port))
 
     @excepts(__name__)
-    def recvData(self, len=65535):
+    def recv_data(self, len=65535):
         return self.__sock.recv(len)
 
     @excepts(__name__)
     def sendall(self, data):
         return self.__sock.sendall(data)
 
+    def close(self):
+        self.__sock.close()
 
 if __name__ == '__main__':
     pass

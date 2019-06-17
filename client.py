@@ -1,9 +1,10 @@
-#coding=utf8
+# coding=utf8
 # __author__ = 'doc007'
 
 from net.tcpclient import TcpClient
 from stream.buffio import NewBuffIO
 from handle import *
+
 
 class Client(TcpClient):
 
@@ -23,10 +24,21 @@ class Client(TcpClient):
         pass
 
 
-if __name__ == '__main__':
+class GateClient(Client):
+
+    def OnConnected(self, conn):
+        # 发送另外两个rc5 pak
+
+        pass
 
 
-
+def main():
     client = Client()
     client.Connect("127.0.0.1", 22222)
-    client.Run()
+
+
+if __name__ == '__main__':
+    main()
+
+
+

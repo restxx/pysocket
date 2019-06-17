@@ -33,5 +33,6 @@ class Singleton(object):
 
         return init_wrap
 
+
 if __name__ == '__main__':
     pass
