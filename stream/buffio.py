@@ -20,7 +20,7 @@ class BufferIO(object):
     # 可供读取的长度
     @property
     def len(self):
-        return self.pd-self.pr
+        return self.pd - self.pr
 
     @excepts(__name__)
     def Write(self, bData):
@@ -41,12 +41,12 @@ class BufferIO(object):
             return
 
         remain = self.__decFun(self.buf, self.pd, self.pw, False)
-        if remain < 0: # 剩余未解密字节数
+        if remain < 0:  # 剩余未解密字节数
             raise Exception('Decrypt Error code=%d' % remain)
         self.pd = (self.pw - remain)
 
     def Peek(self, n):
-        if (n <= self.pd - self.pr):
+        if n <= (self.pd - self.pr):
             return self.buf[self.pr:self.pr + n]
 
     def Next(self, n):
