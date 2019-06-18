@@ -1,12 +1,13 @@
 # coding=utf8
 # __author__ = 'doc007'
 
-import asyncio, sys
-import concurrent.futures
+import asyncio
+# import concurrent.futures, sys
 from abc import ABCMeta, abstractmethod  # , abstractproperty
 from net.msgqueue import MessageQueue
 from net.tcpconnect import TcpConnect
-from stream.buffio import BufferIO #, NewBuffIO
+from stream.buffio import BufferIO  # , NewBuffIO
+from util.dec_warp import coroutine
 
 
 class TcpClient(metaclass=ABCMeta):
@@ -25,7 +26,8 @@ class TcpClient(metaclass=ABCMeta):
         self.IoLoop = asyncio.get_event_loop()
         self.__MQ = MessageQueue()
         self.OnConnected(self.__conn)
-        self.Run()
+        self.start_proc()
+        # self.Run()
 
     @abstractmethod
     def OnConnected(self, conn):
@@ -55,58 +57,52 @@ class TcpClient(metaclass=ABCMeta):
         return paks
 
     @abstractmethod
+    @coroutine(None)
     def heartbeat(self, conn):
         # while not self._isClosed:
         pass
 
-    async def startProc(self):
+    def start_proc(self):
+        @coroutine(None)
         def _r():
             bStream = BufferIO()
             while not self._isClosed:
                 data = self.__conn.recv_data()
                 if not isinstance(data, bytes):
-                    self._isClosed = True
+                    self.sendStopCmd()  # 如果关闭向队列中发送一个特殊标记使_s()退出
                     return
                 bStream.Write(data)
                 # 解析包并做返回操作
                 _ = [self.OnRecv(pak) for pak in self.UnPackData(bStream)]
 
+        @coroutine(None)
         def _s():
             while not self._isClosed:
                 data = self.__MQ.get()
                 if isinstance(data, bytes):
                     self.__conn.sendall(data)
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-            futures = [
-                self.IoLoop.run_in_executor(executor, _r),
-                self.IoLoop.run_in_executor(executor, _s),
-                self.IoLoop.run_in_executor(executor, self.heartbeat, self.__conn)
-            ]
-            return [ret for ret in await asyncio.gather(*futures)]
+                if data is False:
+                    return
+        try:
+            future = asyncio.gather(*[_r(), _s(), self.heartbeat(self.__conn)])
+            self.IoLoop.run_until_complete(future)
+        except Exception as err:
+            pass
 
     def SendData(self, data):
         self.__MQ.put(data)
         print("Send", data)
 
-    def Run(self):
-        future = None
-        try:
-            future = asyncio.ensure_future(self.startProc())
-            self.IoLoop.run_until_complete(future)
-        except Exception as err:
-            pass
-        finally:
-            if future and future.done():
-                self.Close()
-
     def Close(self):
-        self.__conn.close()
-        self._isClosed = True
-        if self.IoLoop:
+        if self.IoLoop and (not self.IoLoop.is_closed()):
+            self._isClosed = True
+            self.__conn.close()
             self.IoLoop.close()
+
+    def sendStopCmd(self):
+        self._isClosed = True
+        _ = [self.__MQ.put(False) for i in range(10)]
 
 
 if __name__ == '__main__':
     pass
-

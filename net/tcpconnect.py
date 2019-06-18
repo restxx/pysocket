@@ -26,5 +26,6 @@ class TcpConnect(object):
     def close(self):
         self.__sock.close()
 
+
 if __name__ == '__main__':
     pass

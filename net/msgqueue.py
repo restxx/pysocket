@@ -2,7 +2,7 @@
 # __author__ = 'doc007'
 
 import queue
-from util.dec_warp import excepts
+from util.dec_warp import excepts, coroutine
 
 TIME_OUT = 10  # 秒
 MAXS_SIZE = 100
@@ -18,7 +18,7 @@ class MessageQueue(object):
         self._Q.put(item, block=True, timeout=TIME_OUT)
 
     def get(self):
-        return self._Q.get(block=False)
+        return self._Q.get()
 
 
 if __name__ == '__main__':

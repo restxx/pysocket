@@ -10,7 +10,7 @@ class LoginHandle(CallMap, Singleton):
     def cmd_11(self, conn, bIO):
         conn.SendData(b"11111111111111")
         conn.SendData(b"11111111111111")
-        pass
+        conn.sendStopCmd()
 
     def cmd_104_21(self, conn, bIO):
         pass
