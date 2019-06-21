@@ -1,10 +1,9 @@
 # coding=utf8
 # __author__ = 'doc007'
 import time
-
+from handle import *
 from net.tcpclient import TcpClient
 from stream.buffio import NewBuffIO
-from handle import *
 from util.dec_warp import coroutine
 
 
@@ -22,14 +21,15 @@ class Client(TcpClient):
         isZip = bufio.GetUInt16()
         cmd = bufio.GetUInt16()
 
-        login_handle.LoginHandle().Execute(cmd, self, bufio)
+        login_handle.map.Execute(cmd, self, bufio)
         pass
 
     @coroutine(None)
     def heartbeat(self, conn):
-        while not self._isClosed:
-            time.sleep(5)
-            print("heart heart heart heart")
+        pass
+        # while not self._isClosed:
+        #     time.sleep(5)
+        #     print("heart heart heart heart")
 
 
 class GateClient(Client):
