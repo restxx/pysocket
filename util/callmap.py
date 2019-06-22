@@ -1,4 +1,4 @@
-# coding=utf8
+# coding=utf-8
 # __author__ = 'doc007'
 import six
 from abc import ABCMeta
@@ -7,8 +7,8 @@ from abc import ABCMeta
 @six.add_metaclass(metaclass=ABCMeta)
 class CallMap(object):
 
-    def __init__(self, mid):
-        self.Mid = mid
+    def __init__(self):
+        self.Mid = None
         self.funcDict = {}
 
 

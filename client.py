@@ -1,4 +1,4 @@
-# coding=utf8
+# coding=utf-8
 # __author__ = 'doc007'
 import time
 from handle import *
@@ -19,10 +19,13 @@ class Client(TcpClient):
         bufio = NewBuffIO(data)
         size = bufio.GetUInt16()
         isZip = bufio.GetUInt16()
-        cmd = bufio.GetUInt16()
 
-        login_handle.map.Execute(cmd, self, bufio)
-        pass
+        mid = bufio.GetUInt16()
+        sid = bufio.GetUInt16()
+
+        hdl = handle_map.HMAP.SelectHandle(mid)
+        if hdl:
+            hdl.Execute(sid, self, bufio)
 
     @coroutine(None)
     def heartbeat(self, conn):

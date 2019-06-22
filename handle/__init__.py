@@ -1,9 +1,7 @@
-#coding=utf8
+#coding=utf-8
 # __author__ = 'doc007'
-from util.handlemap import CallMap
 
-__all__ = ["login_handle"]
-
+__all__ = ["login_handle", "handle_map"]
 
 
 if __name__ == '__main__':
