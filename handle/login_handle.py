@@ -4,14 +4,16 @@
 from handle.handle_map import HMAP
 from util.callmap import CallMap
 
+
 @HMAP.bind(11)
-class loginMap(CallMap):
+class LoginMap(CallMap):
     pass
 
 
-map = loginMap()
+login = LoginMap()
 
-@map.route(22)
+
+@login.route(22)
 def cmd_11(conn, bIO):
     conn.SendData(b"11111111111111")
     conn.SendData(b"11111111111111")
