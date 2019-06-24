@@ -28,4 +28,4 @@ class HandleMap(Singleton):
         return self.__Hmap.get(mId)
 
 
-HMAP = HandleMap()
+hMap = HandleMap()

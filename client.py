@@ -23,7 +23,7 @@ class Client(TcpClient):
         mid = bufio.GetUInt16()
         sid = bufio.GetUInt16()
 
-        hdl = handle_map.HMAP.SelectHandle(mid)
+        hdl = handle_map.hMap.SelectHandle(mid)
         if hdl:
             hdl.Execute(sid, self, bufio)
 
@@ -54,6 +54,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
