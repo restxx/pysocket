@@ -1,18 +1,27 @@
 # coding=utf-8
 # __author__ = 'doc007'
 
-
 import os
 import sys
+from pygccxml import utils
+from pygccxml import parser
 from pyplusplus import module_builder
 
-mb = module_builder.module_builder_t(
-    files=['chg.h'],
-    xml_generator_path='D:\\GCC_XML\\bin\\gccxml.exe'
-)
+generator_path, generator_name = utils.find_xml_generator()
+# (u'/usr/local/bin/gccxml', 'gccxml')
 
-mb.build_code_creator(module_name='libchg_py')  # 要生成的python模块的名称
+# Configure the xml generator
+xml_generator_config = parser.xml_generator_configuration_t(
+    xml_generator_path=generator_path,
+    xml_generator=generator_name)
+
+
+mb = module_builder.module_builder_t(
+    files=['chg.h']
+    , xml_generator_config=xml_generator_config)
+
+mb.build_code_creator(module_name='libchg_py')
 
 mb.code_creator.user_defined_directories.append(os.path.abspath('.'))
 
-mb.write_module(os.path.join(os.path.abspath('.'), 'chg_py.cc'))  # 要生成的boost.python封装好的代码文件的名称
+mb.write_module(os.path.join(os.path.abspath('.'), 'chg_py.cc'))
