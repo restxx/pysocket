@@ -16,7 +16,7 @@ futurist==1.8.1
 greenlet==0.4.15
 idna==2.8
 iso8601==0.1.12
-Jinja2==2.10.1
+Jinja2==2.11.3
 kombu==4.6.3
 linecache2==1.0.0
 MarkupSafe==1.1.1
